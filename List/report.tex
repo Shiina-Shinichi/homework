@@ -1,0 +1,86 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry, CJKutf8}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{徐磊, 3230101707}
+\chead{数据结构与算法第四次作业}
+\rhead{Oct.20th, 2024}
+
+\section{测试程序的设计思路}
+
+为确保对 `List` 类进行全面的测试，我设计了一个涵盖所有成员函数和构造函数的测试程序。测试分为以下几个部分：  
+  
+\begin{itemize}    
+    \item 基本操作测试：包括元素的添加和删除，以检查 \texttt{push\_back}, \texttt{push\_front}, \texttt{pop\_back}, 和 \texttt{pop\_front} 方法。    
+    \item 迭代器功能测试：验证 \texttt{begin}, \texttt{end}, 迭代器递增和解引用操作。    
+    \item 容量相关测试：通过 \texttt{size} 和 \texttt{empty} 方法确认容量变化正确。    
+    \item 复制和移动操作测试：包括拷贝构造函数、移动构造函数、拷贝赋值运算符和移动赋值运算符的测试，确保对象状态正确管理。    
+    \item 异常和边界条件测试：尝试在空列表上执行删除操作，检查程序的健壮性。    
+\end{itemize}   
+  
+\section{测试的结果}  
+  
+测试结果显示，所有的基本操作如添加、删除、访问和迭代器操作均按预期工作。具体结果如下：  
+  
+\begin{itemize}    
+    \item 插入和删除操作均能正确更新列表的大小。    
+    \item 迭代器正确遍历列表，前置和后置递增操作表现正常。    
+    \item 拷贝和移动构造函数正确复制和移动数据，验证了对象的状态（如大小和是否为空）和数据完整性。    
+    \item 使用 Valgrind 检测，未发现内存泄漏，确认资源管理正确。    
+\end{itemize}  
+  
+\section{（可选）Bug 报告}  
+  
+我发现了一个 bug，触发条件如下：  
+  
+\begin{enumerate}    
+    \item 在使用 \texttt{erase} 方法时，如果连续删除列表中的所有元素，然后立即尝试访问任何元素或使用迭代器，程序会崩溃。    
+    \item 此时发现，尽管 \texttt{erase} 更新了 \texttt{next} 和 \texttt{prev} 指针，但在删除最后一个元素后没有重新设置 \texttt{head} 和 \texttt{tail} 的连接，导致迭代器越界。    
+\end{enumerate}    
+  
+据我分析，它出现的原因是：  
+  
+在 \texttt{erase} 方法中，删除节点后未对头尾节点进行适当的空检查和重置。当列表变为空时，应将 \texttt{head->next} 设置为 \texttt{tail}，并将 \texttt{tail->prev} 设置为 \texttt{head}，以保持列表状态的一致性和稳定性。  
+  
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
