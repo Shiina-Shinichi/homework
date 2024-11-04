@@ -1,0 +1,123 @@
+\documentclass[Unicode]{ctexart}
+\usepackage{geometry, CJKutf8}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{徐磊, 3230101707}
+\chead{数据结构与算法第五次作业}
+\rhead{Nov.4th, 2024}
+
+  
+\section{简介}
+本文档描述了在二叉搜索树（BST）类中优化 \texttt{remove} 函数的过程。原始实现的 \texttt{remove} 函数在处理节点删除时效率较低，因为它涉及递归删除和节点内容复制。经过优化后的 \texttt{remove} 函数通过指针修改和节点替换的方式实现删除，避免了递归删除和内容复制，从而提高了效率。
+
+\section{优化后的删除函数实现}
+为了提高效率，新增了辅助函数 \texttt{detachMin}。该函数的作用是查找右子树中的最小节点并将其从子树中移除。当删除具有两个子节点的节点时，通过直接使用 \texttt{detachMin} 函数获得右子树的最小节点并替换被删除的节点，从而避免了数据复制和递归操作。
+
+更新后的 \texttt{remove} 函数的工作流程如下：
+\begin{itemize}
+    \item 如果目标节点是叶子节点，则直接删除。
+    \item 如果目标节点只有一个子节点，则用其子节点替换该节点。
+    \item 如果目标节点有两个子节点，则调用 \texttt{detachMin} 函数获取右子树的最小节点，并用该节点替换目标节点。
+\end{itemize}
+
+优化后的 \texttt{remove} 和 \texttt{detachMin} 函数的代码如下：
+
+\begin{verbatim}
+BinaryNode* detachMin(BinaryNode*& t) {
+    if (t->left == nullptr) {
+        BinaryNode* minNode = t;
+        t = t->right;
+        return minNode;
+    }
+    return detachMin(t->left);
+}
+
+void remove(const Comparable& x, BinaryNode*& t) {
+    if (t == nullptr) return;
+
+    if (x < t->element) {
+        remove(x, t->left);
+    } else if (x > t->element) {
+        remove(x, t->right);
+    } else {
+        if (t->left != nullptr && t->right != nullptr) {
+            BinaryNode* minNode = detachMin(t->right);
+            minNode->left = t->left;
+            minNode->right = t->right;
+            delete t;
+            t = minNode;
+        } else {
+            BinaryNode* oldNode = t;
+            t = (t->left != nullptr) ? t->left : t->right;
+            delete oldNode;
+        }
+    }
+}
+\end{verbatim}
+
+\section{测试用例及结果}
+
+通过多种测试用例验证了优化后的 \texttt{remove} 函数的正确性和效率。以下是测试用例及其结果：
+
+\subsection{测试用例1：删除叶子节点}
+删除叶子节点 20，验证删除操作是否能正确进行，且不会影响其他节点。
+
+\subsection{测试用例2：删除只有一个子节点的节点}
+删除只有一个子节点的节点 30（其子节点为 40），验证该节点能被其唯一子节点正确替换。
+
+\subsection{测试用例3：删除具有两个子节点的节点}
+删除具有两个子节点的节点 50（左右子节点分别为 30 和 70）。使用右子树的最小节点（60）替换被删除的节点，验证二叉搜索树的结构是否完整。
+
+\subsection{测试用例4：删除不存在的节点}
+尝试删除不存在的节点 90，验证在这种情况下树结构保持不变。
+
+\subsection{测试用例5：逐步删除所有节点}
+依次删除所有节点，最终使树为空，验证删除操作的鲁棒性和效率。
+
+测试结果表明，优化后的 \texttt{remove} 函数在各种情况下均能正确执行，并且在性能上有明显提升。
+
+\section{结论}
+本文通过优化二叉搜索树的 \texttt{remove} 函数，减少了递归调用和节点内容复制操作。新的实现显著提高了节点删除操作的效率，并通过综合测试验证了其正确性和鲁棒性。这种改进对于需要频繁删除操作的应用场景具有重要意义。
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
