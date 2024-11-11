@@ -1,0 +1,73 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem} % 使用 enumitem 包代替 enumerate
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{徐磊, 3230101707}
+\chead{数据结构与算法第六次作业}
+\rhead{Nov.11th, 2024}
+
+\section{标准二叉搜索树删除过程}
+
+删除操作首先遵循二叉搜索树的基本规则，根据节点的情况分为三种情况处理：
+   1.叶节点删除：如果目标节点没有子节点，直接删除该节点。
+   2.单子节点删除：如果节点只有一个子节点，则用该子节点替代当前节点。
+   3.双子节点删除：如果节点有两个子节点，则选择右子树中的最小节点（即中序后继）替代该节点的值，并递归删除该最小节点。此操作确保树的有序性。
+
+\section{更新节点高度}
+
+删除操作完成后，沿路径回溯至根节点，并更新所有祖先节点的高度。节点的高度定义为 $1 + \max(\text{左子树高度}, \text{右子树高度})$，因此在子树发生变化时，必须重新计算所有相关祖先节点的高度。
+
+\section{重新平衡 AVL 树}
+
+在更新高度后，某些节点的平衡因子可能会失衡（即左右子树的高度差超过 1）。此时，需要对失衡节点进行旋转操作来恢复平衡。常见的旋转方式包括：
+   单右旋转：当节点的左子树的左侧过高时，执行右旋转。
+   单左旋转：当节点的右子树的右侧过高时，执行左旋转。
+   双旋转（左-右旋转）：当节点的左子树的右侧过高时，首先对左子节点执行左旋转，再对当前节点执行右旋转。
+   双旋转（右-左旋转）：当节点的右子树的左侧过高时，首先对右子节点执行右旋转，再对当前节点执行左旋转。
+
+\section{结论}
+
+通过实现上述删除和旋转步骤的 `remove` 函数，可以在 AVL 树中有效删除节点并保持树的平衡。
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
