@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{ctex} % 支持中文
+\usepackage{booktabs} % 表格美化
+\usepackage{amsmath} % 数学公式
+\usepackage{graphicx} % 图片插入
+\usepackage{fancyhdr}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{徐磊, 3230101707}
+\chead{数据结构与算法 堆排序算法作业}
+\rhead{Dec.2nd, 2024}
+
+\section{引言}
+使用 \texttt{HeapSort} 函数进行排序，并使用 C++ \texttt{chrono} 库记录所花费的时间。
+3. 使用 \texttt{check} 函数验证排序是否正确。
+4. 使用 \texttt{std::sort\_heap()} 对相同序列进行排序，并记录其执行时间，进行性能对比。
+
+堆排序的时间复杂度是 $O(\log n)$，因此整体的时间复杂度为 $O(n \log n)$。
+
+\section{测试结果}
+下表展示了四种序列类型的排序时间。每个序列包含 1000000 个元素，时间单位为秒。
+
+\begin{table}[h!]
+\centering
+\caption{不同序列类型的排序时间}
+\begin{tabular}{ccc}
+\toprule
+序列类型 & 堆排序时间 (秒) & \texttt{std::sort\_heap} 时间 (秒) \\
+\midrule
+随机序列 & 0.075565 & 0.0181685 \\
+有序序列 & 0.0387278 & 0.0240654 \\
+逆序序列 & 0.0413297 & 0.0244835 \\
+重复元素序列 & 0.00164248 & 0.011722 \\
+空序列 & 6.1e-08 & 3.8e-08 \\
+单元素序列 & 2.3e-08 & 2.2e-08 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{时间复杂度与性能分析}
+\subsection{时间复杂度}
+堆排序的时间复杂度由堆的构建和堆调整阶段主导。堆的构建需要 $O(n)$ 时间，而每次堆调整的时间是 $O(\log n)$。因此，堆排序的总体时间复杂度为 $O(n \log n)$。
+
+\subsection{性能比较}
+在比较堆排序与 \texttt{std::sort\_heap()} 的性能时，我们观察到以下几点：
+- 在随机序列上，堆排序和 \texttt{std::sort\_heap()} 的性能差异较大，堆排序的时间明显长于 \texttt{std::sort\_heap()}。
+- 在有序序列和逆序序列上，堆排序的表现良好，时间与 \texttt{std::sort\_heap()} 非常接近。
+- 在重复元素序列上，性能差异较大，堆排序的时间明显低于 \texttt{std::sort\_heap()}。
+- 在空序列和单元素序列上，两者的时间差异非常小，接近零。
+
+性能差异的原因可能与 \texttt{std::sort\_heap()} 的优化实现有关。标准库中的 \texttt{std::sort\_heap()} 在实现上进行了优化，可能在某些情况下表现得更高效。然而，对于大部分实际应用，堆排序的性能与 \texttt{std::sort\_heap()} 相当。
+
+\subsection{边界情况分析}
+对于非常小的序列（例如空序列和单元素序列），两种排序算法的执行时间都非常小，几乎可以忽略不计。这些情况对于堆排序和 \texttt{std::sort\_heap()} 来说都没有实质性的影响。
+
+\section{结论}
+堆排序是一种高效的排序算法，时间复杂度为 $O(n \log n)$。它在不同类型的序列上表现良好，能够生成正确的排序结果。在与 \texttt{std::sort\_heap()} 进行性能比较时，堆排序的性能略微逊色，但差异并不显著。在实际应用中，堆排序是一个可靠且高效的排序算法，适用于大规模数据排序，尤其是在需要排序可变数据的情况下。
+
+通过本次测试和性能评估，确认堆排序在不同场景下的稳定性和效率，未来可以通过进一步优化堆的构建阶段来提高性能。
+
+\end{document}
